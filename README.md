@@ -4,6 +4,10 @@ The objective of this repo is to enable the persisting of words in a sentence to
 
 My other major objective was the save the various tenses of any word along with an example sentence. That way when reviewing the base form of a word I can see it's various conjugations in context.
 
+#### Format of words stored in db
+![Word Table](https://raw.githubusercontent.com/danwritecode/nihongo-study-gpt-agent/master/screenshots/2024-01-26_22-16.png)
+![Word Tense table](https://raw.githubusercontent.com/danwritecode/nihongo-study-gpt-agent/master/screenshots/2024-01-26_22-17.png)
+
 # Setting this up yourself
 
 ### Local env
