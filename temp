@@ -1,0 +1,19 @@
+curl -X POST https://url/api/sentences \
+-H "Content-Type: application/json" \
+-d '{
+  "words": [
+    {
+      "word": "Foo",
+      "definition": "Foobar",
+      "sentence": "I like the foobar.",
+      "word_tenses": [
+        {
+          "word": "Foohad",
+          "sentence": "I had the foohad",
+          "tense_type": "past"
+        }
+      ]
+    }
+  ]
+}'
+

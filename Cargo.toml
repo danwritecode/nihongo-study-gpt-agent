@@ -18,11 +18,11 @@ edition = "2021"
 lambda_http = "0.8.3"
 lambda_runtime = "0.8.3"
 tokio = { version = "1", features = ["macros"] }
+sqlx = { version = "0.7", features = [ "runtime-tokio", "tls-native-tls", "postgres" ] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3", default-features = false, features = ["fmt"] }
 serde = "1.0"
 serde_json = "1.0"
-aws-config = "1.1.2"
-aws-sdk-dynamodb = "1.10.0"
-uuid = { version = "1.6.1", features = ["v4"] }
-chrono = "0.4.31"
+dotenv = "0.15.0"
+anyhow = "1.0.79"
+openssl = { version = "0.10", features = ["vendored"] }
