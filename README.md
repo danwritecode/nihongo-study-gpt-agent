@@ -2,11 +2,13 @@
 
 The objective of this repo is to enable the persisting of words in a sentence to be used in Anki for later study. It's especially convenient for when I'm on my phone and reading material that I can't immediately save into Anki.
 
-See: https://www.cargo-lambda.info/guide/getting-started.html for details on using cargo lambda
+My other major objective was the save the various tenses of any word along with an example sentence. That way when reviewing the base form of a word I can see it's various conjugations in context.
 
 # Setting this up yourself
 
 ### Local env
+See: https://www.cargo-lambda.info/guide/getting-started.html for details on using cargo lambda
+
 1. Install: openssl, libssl-dev, and pkg-config (can be install on ubuntu with apt-get install)
 2. Install cargo lambda (referenced above)
 3. Configure your AWS credentials in `~.aws/credentials`
