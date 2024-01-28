@@ -32,9 +32,9 @@ pub struct NihongoWordWithTenses {
     pub sentence: String,
     pub kanji_mnemonic: Option<String>,
     pub spoken_mnemonic: Option<String>,
-    // pub word_id: Option<i64>,
-    // pub tense_word: Option<String>,
-    // pub tense_sentence: Option<String>,
-    // pub tense_type: Option<String>,
+    pub word_id: Option<i64>,
+    pub tense_word: Option<String>,
+    pub tense_sentence: Option<String>,
+    pub tense_type: Option<String>
 }
 

@@ -17,7 +17,3 @@ tracing = {workspace = true}
 tracing-subscriber = {workspace = true}
 dotenv = {workspace = true}
 anyhow = {workspace = true}
-tempfile = "3.9.0"
-symphonia = { version = "0.5.3", features = ["mp3"] }
-rodio = "0.17.3"
-

@@ -12,8 +12,6 @@ pub async fn add_word(word: &NihongoWordReqWord) -> Result<Option<i64>> {
     let db_url = std::env::var("DATABASE_URL")?;
     let mut connection = PgConnection::connect(db_url.as_str()).await?;
 
-    println!("Word from db crate: {:?}", word);
-
     // wildly inefficient but I don't care, we're just hacking
     let rec = sqlx::query!(
             r#"
@@ -69,6 +67,25 @@ pub async fn add_word_tense(id: i64, words: Vec<NihongoWordReqTense>) -> Result<
     Ok(())
 }
 
+pub async fn update_word_status(id: i64) -> Result<()> {
+    dotenv().ok();
+    let db_url = std::env::var("DATABASE_URL")?;
+    let mut connection = PgConnection::connect(db_url.as_str()).await?;
+
+    sqlx::query!(
+            r#"
+                UPDATE nihongo_word
+                SET is_processed = true
+                WHERE id = $1
+            "#,
+            id,
+        )
+        .execute(&mut connection)
+        .await?;
+
+    Ok(())
+}
+
 pub async fn get_unprocessed_words() -> Result<Vec<NihongoWordWithTenses>> {
     dotenv().ok();
     let db_url = std::env::var("DATABASE_URL")?;
@@ -83,7 +100,11 @@ pub async fn get_unprocessed_words() -> Result<Vec<NihongoWordWithTenses>> {
                 nw.definition,
                 nw.sentence,
                 nw.kanji_mnemonic,
-                nw.spoken_mnemonic
+                nw.spoken_mnemonic,
+                nwt.word_id,
+                nwt.word AS tense_word,
+                nwt.sentence AS tense_sentence,
+                nwt.tense_type
             FROM nihongo_word AS nw
             LEFT JOIN nihongo_word_tense AS nwt ON nw.id = nwt.word_id
             WHERE nw.is_processed = false
