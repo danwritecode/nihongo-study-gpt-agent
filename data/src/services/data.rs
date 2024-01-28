@@ -12,16 +12,20 @@ pub async fn add_word(word: &NihongoWordReqWord) -> Result<Option<i64>> {
     let db_url = std::env::var("DATABASE_URL")?;
     let mut connection = PgConnection::connect(db_url.as_str()).await?;
 
+    println!("Word from db crate: {:?}", word);
+
     // wildly inefficient but I don't care, we're just hacking
     let rec = sqlx::query!(
             r#"
-                INSERT INTO nihongo_word ( word, definition, sentence )
-                VALUES ( $1, $2, $3 )
+                INSERT INTO nihongo_word ( word, definition, sentence, kanji_mnemonic, spoken_mnemonic )
+                VALUES ( $1, $2, $3, $4, $5 )
                 RETURNING id
             "#,
             word.word,
             word.definition,
-            word.sentence
+            word.sentence,
+            word.kanji_mnemonic,
+            word.spoken_mnemonic
         )
         .fetch_one(&mut connection)
         .await;
@@ -79,21 +83,11 @@ pub async fn get_unprocessed_words() -> Result<Vec<NihongoWordWithTenses>> {
                 nw.definition,
                 nw.sentence,
                 nw.kanji_mnemonic,
-                nw.spoken_mnemonic,
-                nw.is_processed,
-                nw.created_at,
-                nwt.id AS tense_id,
-                nwt.word_id,
-                nwt.word AS tense_word,
-                nwt.sentence AS tense_sentence,
-                nwt.tense_type,
-                nwt.created_at AS tense_created_at
-            FROM
-                nihongo_word AS nw
-            LEFT JOIN
-                nihongo_word_tense AS nwt ON nw.id = nwt.word_id
-            ORDER BY
-                nw.id, nwt.id;
+                nw.spoken_mnemonic
+            FROM nihongo_word AS nw
+            LEFT JOIN nihongo_word_tense AS nwt ON nw.id = nwt.word_id
+            WHERE nw.is_processed = false
+            ORDER BY id desc
         "
     )
     .fetch_all(&mut connection)

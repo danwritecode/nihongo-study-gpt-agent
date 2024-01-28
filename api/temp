@@ -1,4 +1,4 @@
-curl -X POST https://url/api/sentences \
+curl -X POST https://ws1mclo42d.execute-api.us-east-2.amazonaws.com/api/words \
 -H "Content-Type: application/json" \
 -d '{
   "words": [
@@ -6,6 +6,8 @@ curl -X POST https://url/api/sentences \
       "word": "Foo",
       "definition": "Foobar",
       "sentence": "I like the foobar.",
+      "kanji_mnemonic": "The kanji 学 looks like a person learning under a roof, and 校 resembles a pair of intersecting roads, symbolizing the crossroads of education.",
+      "spoken_mnemonic": "Imagine saying 'gakkou' as you walk to the crossroads of learning.",
       "word_tenses": [
         {
           "word": "Foohad",
@@ -15,5 +17,5 @@ curl -X POST https://url/api/sentences \
       ]
     }
   ]
-}'
+}' --verbose
 
