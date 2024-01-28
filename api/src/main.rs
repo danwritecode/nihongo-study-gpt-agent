@@ -2,6 +2,7 @@ use lambda_http::{run, service_fn, Body, Request, Response};
 use anyhow::Result;
 use serde::{Serialize, Deserialize};
 use dotenv::dotenv;
+use serde_json::Value;
 
 mod services;
 
@@ -34,21 +35,35 @@ async fn function_handler(event: Request) -> Result<Response<Body>, lambda_http:
 
 async fn post_handler(event: Request) -> Result<Response<Body>, lambda_http::Error> {
     let body = event.body();
-    let body: NihongoWordReq = serde_json::from_slice(body.as_ref())?;
 
-    tracing::info!("Body: {:?}", body); 
+    // let body: NihongoWordReq = serde_json::from_slice(body.as_ref())?;
+    match serde_json::from_slice::<NihongoWordReq>(body.as_ref()) {
+        Ok(b) => {
+            for w in &b.words {
+                add_to_table(w.clone()).await?;
+            }
 
-    for w in &body.words {
-        add_to_table(w.clone()).await?;
+            let resp = Response::builder()
+                .status(200)
+                .header("content-type", "text/plain")
+                .body("".into())
+                .map_err(Box::new)?;
+
+            Ok(resp)
+        },
+        Err(e) => {
+            let body: Value = serde_json::from_slice(body.as_ref())?;
+            println!("Failed to deserialize error: {} | request body: {}", e, body);
+
+            let resp = Response::builder()
+                .status(400)
+                .header("content-type", "text/plain")
+                .body("".into())
+                .map_err(Box::new)?;
+
+            Ok(resp)
+        }
     }
-
-    let resp = Response::builder()
-        .status(200)
-        .header("content-type", "text/plain")
-        .body("".into())
-        .map_err(Box::new)?;
-
-    Ok(resp)
 }
 
 async fn add_to_table(word: NihongoWordReqWord) -> Result<()> {
@@ -69,6 +84,8 @@ pub struct NihongoWordReqWord {
     pub word: String,
     pub definition: String,
     pub sentence: String,
+    pub kanji_mnemonic: Option<String>,
+    pub spoken_mnemonic: Option<String>,
     pub word_tenses: Vec<NihongoWordReqTense>,
 }
 
