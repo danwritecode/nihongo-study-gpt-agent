@@ -29,7 +29,7 @@ cargo lambda build --release
 ```
 4. Deploy
 ```
-cargo lambda deploy
+cargo lambda deploy --binary-path ./target/lambda/rust-lambda-nihongo/bootstrap
 ```
 
 Env Vars: 
