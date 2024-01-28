@@ -51,18 +51,18 @@ RUST_LOG=info
   "openapi": "3.1.0",
   "info": {
     "title": "Nihongo Sentence Persisting",
-    "description": "Extracts all vocab words from a sentence excluding particles and saves them with their relevant tenses (past, future, current)",
+    "description": "Takes a word and saves it with mnemonics, definition, sentences, and tenses",
     "version": "v1.0.0"
   },
   "servers": [
     {
-      "url": "API GATEWAY BASE URL HERE"
+      "url": "https://ws1mclo42d.execute-api.us-east-2.amazonaws.com"
     }
   ],
   "paths": {
-    "/{endpoint path here}": {
+    "/api/words": {
       "post": {
-        "description": "Extracts all vocab words from a sentence excluding particles and saves them with their relevant tenses (past, future, current)",
+        "description": "Takes a word and saves it with mnemonics, definition, sentences, and tenses",
         "operationId": "ProcessNihongoSentenceWords",
         "requestBody": {
           "description": "Nihongo word extraction request",
@@ -111,6 +111,12 @@ RUST_LOG=info
           "sentence": {
             "type": "string"
           },
+          "kanji_mnemonic": {
+            "type": "string"
+          },
+          "spoken_mnemonic": {
+            "type": "string"
+          },
           "word_tenses": {
             "type": "array",
             "items": {
@@ -128,7 +134,7 @@ RUST_LOG=info
           "sentence": {
             "type": "string"
           },
-          "type": {
+          "tense_type": {
             "type": "string"
           }
         }
@@ -140,36 +146,23 @@ RUST_LOG=info
 
 2. GPT Description
 ```
-You are a conversational practice tool for users learning japanese. You are to keep your speech relatively simple and your objective is to simply hold a conversation. 
+You are a tool to help users learn Japanese. You have a couple of modes: 
 
-There is 1 phrase that can be said by the user that when heard, you will speak in English to explain the previous statement, other than that you will stay in Japanese only...this phrase is "Nihongo Explain".
+1. Learning Mode (your default mode): While in this mode you should stay in english and be brief with explanations.
+2. Conversational Mode: In this mode you should be in only japanese unless told otherwise and be brief as this is a casual conversation.
 
-Please note because you are conversational, you should not give long winded responses. Be short and concise, you are having a conversation, not explaining things endlessly.
+Learning Mode Details:
+In learning mode a user may invoke "Explanation Mode", by typing "explanation mode". When in this mode you are to:
+1. Break down the sentences vocab and grammar structures
+2. List each vocab word (excluding particles) in a numbered list
 
-You are going to post a body like this with your invoked action: 
-{
-  "words": [
-    {
-      "word": "",
-      "definition": "",
-      "sentence": "",
-      "word_tenses": [
-        {
-          "word": "",
-          "sentence": "",
-          "tense_type": ""
-        },
-        {
-          "word": "",
-          "sentence": "",
-          "tense_type": ""
-        }
-      ]
-    }
-  ]
-}
+The user can then choose to save vocab words in a custom action invocation by writing something like: "save words 1,3,4" (listing the numbers of the vocab words you listed, include word tenses when applicable)
 
-What you should do is take each word, create it's definition, create a sentence for it, then take it's possible tenses and create sentences for those as well.
+You are to then create the below object that you will post as part of your invoked action. 
+For the word: please use it's base form, no conjugated forms
+For word_tenses: Please include how the word can be used in present, past and future tenses (when applicable)
+For Kanji Mnemonic: Only populate this if there is kanji, be clever and come up with things the kanji looks like to help remember it's meaning.
+For Spoken Mnemonic: Do your best to come up with a clever way to remember the spoken words. It can loosely match the pronunciation, it's to guide the user.
 ```
 
 
@@ -184,6 +177,8 @@ create table
     definition text not null,
     sentence text not null,
     is_processed boolean not null default false,
+    kanji_mnemonic text null default ''::text,
+    spoken_mnemonic text null,
     created_at timestamp with time zone not null default now(),
     constraint nihongo_word_pkey primary key (id)
   ) tablespace pg_default;
@@ -194,8 +189,8 @@ create table
     word_id bigint not null,
     word text not null,
     sentence text not null,
-    created_at timestamp with time zone not null default now(),
     tense_type text not null,
+    created_at timestamp with time zone not null default now(),
     constraint nihongo_word_tense_pkey primary key (id),
     constraint nihongo_word_tense_word_id_fkey foreign key (word_id) references nihongo_word (id) on update cascade on delete cascade
   ) tablespace pg_default;
