@@ -12,7 +12,6 @@ pub struct NihongoWordReqWord {
     pub sentence: String,
     pub kanji_mnemonic: Option<String>,
     pub spoken_mnemonic: Option<String>,
-    pub is_processed: bool,
     pub word_tenses: Vec<NihongoWordReqTense>,
 }
 
