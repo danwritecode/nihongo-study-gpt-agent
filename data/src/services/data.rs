@@ -15,15 +15,18 @@ pub async fn add_word(word: &NihongoWordReqWord) -> Result<Option<i64>> {
     // wildly inefficient but I don't care, we're just hacking
     let rec = sqlx::query!(
             r#"
-                INSERT INTO nihongo_word ( word, definition, sentence, kanji_mnemonic, spoken_mnemonic )
-                VALUES ( $1, $2, $3, $4, $5 )
+                INSERT INTO nihongo_word ( word, definition, sentence, kanji_mnemonic, spoken_mnemonic, word_reading, sentence_translation, is_kanji )
+                VALUES ( $1, $2, $3, $4, $5, $6, $7, $8 )
                 RETURNING id
             "#,
             word.word,
             word.definition,
             word.sentence,
             word.kanji_mnemonic,
-            word.spoken_mnemonic
+            word.spoken_mnemonic,
+            word.word_reading,
+            word.sentence_translation,
+            word.is_kanji
         )
         .fetch_one(&mut connection)
         .await;
@@ -97,10 +100,13 @@ pub async fn get_unprocessed_words() -> Result<Vec<NihongoWordWithTenses>> {
             SELECT
                 nw.id,
                 nw.word,
+                nw.is_kanji,
                 nw.definition,
                 nw.sentence,
                 nw.kanji_mnemonic,
                 nw.spoken_mnemonic,
+                nw.word_reading,
+                nw.sentence_translation,
                 nwt.word_id,
                 nwt.word AS tense_word,
                 nwt.sentence AS tense_sentence,

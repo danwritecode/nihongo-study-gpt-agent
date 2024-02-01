@@ -2424,6 +2424,7 @@ dependencies = [
  "anyhow",
  "data",
  "dotenv",
+ "rand",
  "reqwest",
  "serde",
  "serde_json",

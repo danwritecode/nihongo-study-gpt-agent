@@ -25,11 +25,11 @@ region = us-east-2
 ```
 4. Build with 
 ```
-cargo lambda build --release
+cargo lambda build --release --package rust-lambda-nihongo
 ```
 4. Deploy
 ```
-cargo lambda deploy --binary-path ./target/lambda/rust-lambda-nihongo/bootstrap
+cargo lambda deploy rust-lambda-nihongo
 ```
 
 Env Vars: 
@@ -105,10 +105,17 @@ RUST_LOG=info
           "word": {
             "type": "string"
           },
+          "word_reading": {
+            "type": "string",
+            "description": "The spelling of the word without kanji using hiragana or katakana (whatever is applicable)"
+          },
           "definition": {
             "type": "string"
           },
           "sentence": {
+            "type": "string"
+          },
+          "sentence_translation": {
             "type": "string"
           },
           "kanji_mnemonic": {
@@ -179,8 +186,11 @@ create table
     is_processed boolean not null default false,
     kanji_mnemonic text null default ''::text,
     spoken_mnemonic text null,
+    word_reading text not null,
+    sentence_translation text not null,
     created_at timestamp with time zone not null default now(),
-    constraint nihongo_word_pkey primary key (id)
+    constraint nihongo_word_pkey primary key (id),
+    constraint uq_word unique (word)
   ) tablespace pg_default;
 
 create table

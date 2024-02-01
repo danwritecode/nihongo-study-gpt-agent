@@ -8,11 +8,14 @@ pub struct NihongoWordReq {
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct NihongoWordReqWord {
     pub word: String,
+    pub is_kanji: bool,
+    pub word_reading: String,
     pub definition: String,
     pub sentence: String,
+    pub sentence_translation: String,
     pub kanji_mnemonic: Option<String>,
     pub spoken_mnemonic: Option<String>,
-    pub word_tenses: Vec<NihongoWordReqTense>,
+    pub word_tenses: Vec<NihongoWordReqTense>
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]

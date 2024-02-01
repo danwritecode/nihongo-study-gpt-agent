@@ -28,10 +28,13 @@ pub struct NihongoWordWithTensesStructuredTenses {
 pub struct NihongoWordWithTenses {
     pub id: i64,
     pub word: String,
+    pub is_kanji: bool,
     pub definition: String,
     pub sentence: String,
     pub kanji_mnemonic: Option<String>,
     pub spoken_mnemonic: Option<String>,
+    pub word_reading: String,
+    pub sentence_translation: String,
     pub word_id: Option<i64>,
     pub tense_word: Option<String>,
     pub tense_sentence: Option<String>,

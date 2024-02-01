@@ -17,3 +17,4 @@ tracing = {workspace = true}
 tracing-subscriber = {workspace = true}
 dotenv = {workspace = true}
 anyhow = {workspace = true}
+rand = "0.8.5"

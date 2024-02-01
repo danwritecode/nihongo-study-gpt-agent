@@ -70,8 +70,6 @@ async fn post_handler(event: Request) -> Result<Response<Body>, lambda_http::Err
 }
 
 async fn add_to_table(word: NihongoWordReqWord) -> Result<()> {
-    println!("word: {:?}", word);
-
     match add_word(&word).await? {
         Some(id) => {
             add_word_tense(id, word.word_tenses).await?;
