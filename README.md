@@ -105,6 +105,10 @@ RUST_LOG=info
           "word": {
             "type": "string"
           },
+          "is_kanji": {
+            "type": "boolean",
+            "description": "States whether the word contains kanji or not"
+          },
           "word_reading": {
             "type": "string",
             "description": "The spelling of the word without kanji using hiragana or katakana (whatever is applicable)"
