@@ -4,6 +4,7 @@ members = [
     "api",
     "data", 
     "worker",
+    "services"
 ]
 
 [workspace.dependencies]  
