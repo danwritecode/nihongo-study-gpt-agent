@@ -1,12 +1,9 @@
 use dotenv::dotenv;
 use sqlx::{postgres::PgConnection, Connection};
 use anyhow::{Result, bail};
-use crate::models::{
-    db::NihongoWordWithTenses,
-    requests::{NihongoWordReqWord, NihongoWordReqTense}
-};
+use crate::models::db::{NihongoWordWithTenses, NihongoWordTenseInsert, NihongoWordInsert};
 
-pub async fn add_word(word: &NihongoWordReqWord) -> Result<Option<i64>> {
+pub async fn add_word(word: &NihongoWordInsert) -> Result<Option<i64>> {
     // Fine because we aren't hitting this a lot, don't need a pool, we're just hacking
     dotenv().ok();
     let db_url = std::env::var("DATABASE_URL")?;
@@ -46,7 +43,7 @@ pub async fn add_word(word: &NihongoWordReqWord) -> Result<Option<i64>> {
     }
 }
 
-pub async fn add_word_tense(id: i64, words: Vec<NihongoWordReqTense>) -> Result<()> {
+pub async fn add_word_tense(id: i64, words: Vec<NihongoWordTenseInsert>) -> Result<()> {
     dotenv().ok();
     let db_url = std::env::var("DATABASE_URL")?;
     let mut connection = PgConnection::connect(db_url.as_str()).await?;

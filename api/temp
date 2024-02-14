@@ -1,4 +1,4 @@
-curl -X POST https://ws1mclo42d.execute-api.us-east-2.amazonaws.com/api/words \
+curl -X POST https://ws1mclo42d.execute-api.us-east-2.amazonaws.com/api/words?req_type=chatgpt \
 -H "Content-Type: application/json" \
 -d '{
   "words": [
@@ -22,3 +22,8 @@ curl -X POST https://ws1mclo42d.execute-api.us-east-2.amazonaws.com/api/words \
   ]
 }' --verbose
 
+curl -X POST https://ws1mclo42d.execute-api.us-east-2.amazonaws.com/api/words?req_type=singular_word \
+-H "Content-Type: application/json" \
+-d '{
+  "word": "例えば"
+}' --verbose

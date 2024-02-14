@@ -1,3 +1,4 @@
+use serde::{Serialize, Deserialize};
 use sqlx::types::chrono::{DateTime, Utc};
 
 #[derive(sqlx::FromRow, Debug, Clone, PartialEq)]
@@ -23,7 +24,6 @@ pub struct NihongoWordWithTensesStructuredTenses {
     pub created_at: DateTime<Utc>
 }
 
-
 #[derive(sqlx::FromRow, Debug, Clone, PartialEq)]
 pub struct NihongoWordWithTenses {
     pub id: i64,
@@ -41,3 +41,23 @@ pub struct NihongoWordWithTenses {
     pub tense_type: Option<String>
 }
 
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct NihongoWordInsert {
+    pub word: String,
+    pub is_kanji: bool,
+    pub word_reading: String,
+    pub definition: String,
+    pub sentence: String,
+    pub sentence_translation: String,
+    pub kanji_mnemonic: Option<String>,
+    pub spoken_mnemonic: Option<String>,
+    pub word_tenses: Vec<NihongoWordTenseInsert>
+}
+
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct NihongoWordTenseInsert {
+    pub word: String,
+    pub sentence: String,
+    pub tense_type: String
+}

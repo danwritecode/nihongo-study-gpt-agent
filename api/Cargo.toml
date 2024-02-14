@@ -19,6 +19,7 @@ lambda_http = "0.8.3"
 lambda_runtime = "0.8.3"
 openssl = { version = "0.10", features = ["vendored"] }
 data = { path="../data" }
+services = { path="../services" }
 
 serde = {workspace = true}
 serde_json = {workspace = true}
