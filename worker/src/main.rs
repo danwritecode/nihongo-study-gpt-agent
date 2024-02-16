@@ -20,13 +20,14 @@ const VOICE_ID: &str = "IKne3meq5aSn9XLyUdCD";
 const DECK_NAME: &str = "Dan's Nihongo Deck";
 const DECK_FORMAT: &str = "JP1Kv3";
 const BASE_ANKI_MEDIA_DIR: &str = "/home/dan/.local/share/Anki2/User 1/collection.media";
+const SLEEP_TIME: u64 = 86400;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let file_appender = tracing_appender::rolling::daily("/var/log/langcrack", "lang_crack.log");
     tracing_subscriber::fmt().with_writer(file_appender).init();
 
-    tracing::info!("Starting worker");
+    tracing::info!("Starting worker v0.1");
 
     dotenv().ok();
     let eleven_labs_key = std::env::var("ELEVEN_LABS_KEY")?;
@@ -37,9 +38,12 @@ async fn main() -> Result<()> {
 
         if words.len() == 0 {
             tracing::info!("No words to process");
-            sleep(Duration::from_secs(120)).await;
+            sleep(Duration::from_secs(SLEEP_TIME)).await;
             continue;
         }
+
+        tracing::info!("Syncing Anki - Before processing words");
+        sync_anki().await?;
 
         for w in &words {
             tracing::info!("Processing word: {}", w.word);
@@ -52,11 +56,11 @@ async fn main() -> Result<()> {
             tracing::info!("Processed word: {}", w.word);
         }
 
-        tracing::info!("Syncing Anki");
+        tracing::info!("Syncing Anki - After processing words");
         sync_anki().await?;
 
-        tracing::info!("Sleeping for 120 seconds");
-        sleep(Duration::from_secs(120)).await;
+        tracing::info!("Sleeping for 24 hours");
+        sleep(Duration::from_secs(SLEEP_TIME)).await;
     }
 }
 
