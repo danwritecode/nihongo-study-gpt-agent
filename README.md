@@ -212,3 +212,15 @@ create table
 
 # Next Steps
 I need to create a service that will run to get words from the DB and add them into Anki. Will be working on that soon.
+
+
+# Random stuff
+```
+Service commands:
+sudo systemctl restart langcrack.service
+sudo systemctl start langcrack.service
+journalctl -u langcrack.service
+
+Log folder:
+/var/log/langcrack
+```
