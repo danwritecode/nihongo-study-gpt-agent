@@ -26,6 +26,8 @@ async fn main() -> Result<()> {
     let file_appender = tracing_appender::rolling::daily("/var/log/langcrack", "lang_crack.log");
     tracing_subscriber::fmt().with_writer(file_appender).init();
 
+    tracing::info!("Starting worker");
+
     dotenv().ok();
     let eleven_labs_key = std::env::var("ELEVEN_LABS_KEY")?;
 
@@ -49,6 +51,9 @@ async fn main() -> Result<()> {
             update_word_status(w.id).await?;
             tracing::info!("Processed word: {}", w.word);
         }
+
+        tracing::info!("Syncing Anki");
+        sync_anki().await?;
 
         tracing::info!("Sleeping for 120 seconds");
         sleep(Duration::from_secs(120)).await;
@@ -194,6 +199,25 @@ async fn add_card_anki(
                     ]
                 } 
             }
+        }))
+        .send()
+        .await?
+        .json()
+        .await?;
+
+    if !res["error"].is_null() {
+        bail!("Response from anki contained error(s) | error(s): {}", res["error"]) 
+    }
+
+    Ok(())
+}
+
+async fn sync_anki() -> Result<()> {
+    let res: Value = Client::new()
+        .post("http://localhost:8765")
+        .json(&serde_json::json!({
+            "action": "sync",
+            "version": 6
         }))
         .send()
         .await?
