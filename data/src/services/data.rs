@@ -104,14 +104,14 @@ pub async fn get_unprocessed_words() -> Result<Vec<NihongoWordWithTenses>> {
                 nw.spoken_mnemonic,
                 nw.word_reading,
                 nw.sentence_translation,
-                nwt.word_id,
-                nwt.word AS tense_word,
-                nwt.sentence AS tense_sentence,
-                nwt.tense_type
+                COALESCE(nwt.word_id, null) AS word_id,
+                COALESCE(nwt.word, null) AS tense_word,
+                COALESCE(nwt.sentence, null) AS tense_sentence,
+                COALESCE(nwt.tense_type, null) AS tense_type
             FROM nihongo_word AS nw
             LEFT JOIN nihongo_word_tense AS nwt ON nw.id = nwt.word_id
             WHERE nw.is_processed = false
-            ORDER BY id desc
+            ORDER BY nw.id DESC;
         "
     )
     .fetch_all(&mut connection)

@@ -14,5 +14,6 @@ tokio = { version = "1", features = ["full"] }
 sqlx = { version = "0.7.3", features = [ "runtime-tokio", "tls-native-tls", "postgres", "chrono" ] }
 tracing = { version = "0.1", features = ["log"] }
 tracing-subscriber = { version = "0.3.11", default-features = false, features = ["fmt", "json"] }
+tracing-appender = { version = "0.2.3" }
 dotenv = "0.15.0"
 anyhow = "1.0.79"

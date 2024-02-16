@@ -23,24 +23,34 @@ const BASE_ANKI_MEDIA_DIR: &str = "/home/dan/.local/share/Anki2/User 1/collectio
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    tracing_subscriber::fmt().init();
+    let file_appender = tracing_appender::rolling::daily("/var/log/langcrack", "lang_crack.log");
+    tracing_subscriber::fmt().with_writer(file_appender).init();
+
     dotenv().ok();
     let eleven_labs_key = std::env::var("ELEVEN_LABS_KEY")?;
-    
+
     loop {
         let up_words = get_unprocessed_words().await?;
         let words = group_rows(up_words);
-        
-        println!("words: {:?}", words);
+
+        if words.len() == 0 {
+            tracing::info!("No words to process");
+            sleep(Duration::from_secs(120)).await;
+            continue;
+        }
 
         for w in &words {
+            tracing::info!("Processing word: {}", w.word);
+
             generate_and_save_audio_files(&w.word, &w.word_reading, &w.sentence, &eleven_labs_key).await?;
             add_card_anki(w).await?;
 
             // finally update the word status to processed = true
             update_word_status(w.id).await?;
+            tracing::info!("Processed word: {}", w.word);
         }
 
+        tracing::info!("Sleeping for 120 seconds");
         sleep(Duration::from_secs(120)).await;
     }
 }
@@ -139,11 +149,10 @@ async fn add_card_anki(
     if word.tenses.len() > 0 {
         for t in &word.tenses {
             tenses.push_str(&format!("
-                {:?}: {:?} | {:?} \n
+                {:?}: {:?} \n
             ", 
                 t.tense_type.clone().map_or("".to_string(), |v| v), 
-                t.tense_word.clone().map_or("".to_string(), |v| v), 
-                t.tense_sentence.clone().map_or("".to_string(), |v| v)
+                t.tense_word.clone().map_or("".to_string(), |v| v)
             ));
         }
     }
@@ -190,8 +199,6 @@ async fn add_card_anki(
         .await?
         .json()
         .await?;
-
-    println!("res: {:#?}", res);
 
     if !res["error"].is_null() {
         bail!("Response from anki contained error(s) | error(s): {}", res["error"]) 
